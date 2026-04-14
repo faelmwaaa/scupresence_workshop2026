@@ -26,7 +26,18 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+    // 1. Get the currently logged-in user's role
+    $role = auth()->user()->role;
+
+    // 2. Direct them to the correct Vue file inside the Dashboard folder
+    if ($role === 'admin') {
+        return Inertia::render('Dashboard/Admin');
+    } elseif ($role === 'bph') {
+        return Inertia::render('Dashboard/Bph');
+    } else {
+        // Default fallback is the Anggota dashboard
+        return Inertia::render('Dashboard/Anggota');
+    }
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
