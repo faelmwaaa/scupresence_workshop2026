@@ -10,43 +10,87 @@ use Laravel\Socialite\Facades\Socialite;
 
 class GoogleController extends Controller
 {
-    // 1. Send the user to Google
+    /**
+     * Redirect to Google OAuth.
+     * Accepts ?role= query param (mahasiswa|pelatih)
+     */
     public function redirect(Request $request)
     {
-        // Remember if they clicked the 'Anggota' or 'BPH' button
-        $intendedRole = $request->query('role', 'anggota');
-        session(['intended_role' => $intendedRole]);
+        $role = $request->get('role', 'mahasiswa');
+        session(['intended_role' => $role]);
 
         return Socialite::driver('google')->redirect();
     }
 
-    // 2. Google sends them back here
-    public function callback()
+    /**
+     * Handle Google OAuth callback.
+     */
+    public function callback(Request $request)
     {
         try {
-            // Grab the user details from Google
             $googleUser = Socialite::driver('google')->user();
         } catch (\Exception $e) {
-            return redirect('/login')->withErrors(['email' => 'Google Login failed. Please try again.']);
+            return redirect('/')->with('error', 'Google login gagal. Silakan coba lagi.');
         }
 
-        // Check if this student already exists in our database
-        $existingUser = User::where('email', $googleUser->getEmail())->first();
+        $intendedRole = session('intended_role', 'mahasiswa');
 
-        if ($existingUser) {
-            // Welcome back! Log them in and send to their dashboard
-            Auth::login($existingUser);
-            return redirect()->route('dashboard');
-        } else {
-            // New user! We need to ask for their NIM and Unit.
-            // Save their Google data to the session so we can pre-fill the form for them
-            session([
-                'google_name' => $googleUser->getName(),
-                'google_email' => $googleUser->getEmail(),
-                'google_id' => $googleUser->getId(),
+        // Find existing user by google_id or email
+        $user = User::where('google_id', $googleUser->getId())
+            ->orWhere('email', $googleUser->getEmail())
+            ->first();
+
+        if ($user) {
+            // Update google_id if not set
+            if (!$user->google_id) {
+                $user->update(['google_id' => $googleUser->getId()]);
+            }
+            Auth::login($user);
+
+            return $this->redirectToDashboard($user);
+        }
+
+        // New user - create and redirect
+        if (!$user) {
+            $user = User::create([
+                'google_id'       => $googleUser->getId(),
+                'name'            => $googleUser->getName(),
+                'email'           => $googleUser->getEmail(),
+                'profile_picture' => $googleUser->getAvatar(),
+                'role'            => $intendedRole === 'mahasiswa' ? 'anggota' : $intendedRole,
+                'account_status'  => 'pending',
             ]);
+        } Auth::login($user);
 
-            return redirect()->route('register');
+        return redirect()->route('onboarding.' . $intendedRole);
+    }
+
+    /**
+     * Redirect user to the correct dashboard based on role.
+     */
+    private function redirectToDashboard(User $user)
+    {
+        // If user hasn't completed onboarding (no nim/phone for non-pelatih)
+        if (in_array($user->role, ['anggota', 'pengurus']) && !$user->nim) {
+            return redirect()->route('onboarding.mahasiswa');
         }
+        if ($user->role === 'pelatih' && !$user->phone) {
+            return redirect()->route('onboarding.pelatih');
+        }
+
+        return match ($user->role) {
+            'admin'    => redirect()->route('admin.home'),
+            'pengurus' => redirect()->route('pengurus.home'),
+            'pelatih'  => redirect()->route('pelatih.home'),
+            default    => redirect()->route('anggota.home'),
+        };
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect('/');
     }
 }

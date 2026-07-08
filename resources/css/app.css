@@ -1,3 +1,87 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+    .hide-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+}
+@layer base {
+    html {
+        font-family: 'Inter', sans-serif;
+        -webkit-tap-highlight-color: transparent;
+    }
+    body {
+        @apply bg-gray-50 text-gray-900;
+        overscroll-behavior: none;
+    }
+}
+
+@layer components {
+    .btn-primary {
+        @apply w-full flex items-center justify-center gap-3 px-4 py-3 bg-brand-purple hover:bg-brand-purple-dark text-white rounded-xl font-medium transition-all duration-200 shadow-md hover:shadow-lg active:scale-95;
+    }
+    .btn-secondary {
+        @apply w-full flex items-center justify-center gap-3 px-4 py-3 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 rounded-xl font-medium transition-all duration-200 shadow-sm hover:shadow-md active:scale-95;
+    }
+    .btn-danger {
+        @apply flex items-center justify-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-all duration-200 text-sm active:scale-95;
+    }
+    .btn-success {
+        @apply flex items-center justify-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-all duration-200 text-sm active:scale-95;
+    }
+    .input-field {
+        @apply w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-purple/30 focus:border-brand-purple transition-all duration-200 bg-white;
+    }
+    .card {
+        @apply bg-white rounded-2xl shadow-sm border border-gray-100 p-4;
+    }
+    .page-container {
+        @apply max-w-lg mx-auto min-h-screen;
+    }
+    .bottom-nav-item {
+        @apply flex flex-col items-center justify-center gap-1 flex-1 py-2 text-xs font-medium transition-colors duration-200;
+    }
+    .section-title {
+        @apply text-lg font-bold text-gray-900 mb-4;
+    }
+    .badge-pending {
+        @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800;
+    }
+    .badge-active {
+        @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800;
+    }
+    .badge-hadir {
+        @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700;
+    }
+    .badge-terlambat {
+        @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700;
+    }
+    .badge-tidak-hadir {
+        @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700;
+    }
+    .safe-area-bottom {
+        padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+}
+
+@layer utilities {
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+    .active\:scale-98:active {
+        transform: scale(0.98);
+    }
+}
+

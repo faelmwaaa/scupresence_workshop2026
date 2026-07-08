@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Presence extends Model
 {
@@ -12,22 +12,23 @@ class Presence extends Model
     protected $fillable = [
         'schedule_id',
         'user_id',
-        'status_kehadiran',
-        'alasan_absen',
+        'status',
+        'alasan',
         'foto_path',
         'latitude',
         'longitude',
-        'kegiatan_dipilih',
-        'status_validasi',
     ];
 
-    // The event they attended
+    protected $casts = [
+        'latitude' => 'decimal:8',
+        'longitude' => 'decimal:8',
+    ];
+
     public function schedule()
     {
         return $this->belongsTo(Schedule::class);
     }
 
-    // The student who submitted it
     public function user()
     {
         return $this->belongsTo(User::class);

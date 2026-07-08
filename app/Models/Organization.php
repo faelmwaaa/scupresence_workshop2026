@@ -2,26 +2,89 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Organization extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'level', 'parent_id'];
+    protected $fillable = ['parent_id', 'name', 'type'];
 
-    // Allows a unit (e.g., BEM FIKOM) to find its category (BEM Fakultas)
-    public function parent(): BelongsTo
+    /**
+     * Parent organization (for hierarchical structure).
+     */
+    public function parent()
     {
         return $this->belongsTo(Organization::class, 'parent_id');
     }
 
-    // Allows a category (e.g., ORMAWA) to find all its units
-    public function children(): HasMany
+    /**
+     * Child organizations.
+     */
+    public function children()
     {
         return $this->hasMany(Organization::class, 'parent_id');
+    }
+
+    /**
+     * Members of this organization (via pivot).
+     */
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'organization_user')
+            ->withPivot('jabatan', 'membership_status')
+            ->withTimestamps();
+    }
+
+    /**
+     * Active members only.
+     */
+    public function activeUsers()
+    {
+        return $this->belongsToMany(User::class, 'organization_user')
+            ->withPivot('jabatan', 'membership_status')
+            ->wherePivot('membership_status', 'active')
+            ->withTimestamps();
+    }
+
+    /**
+     * Pending member requests.
+     */
+    public function pendingUsers()
+    {
+        return $this->belongsToMany(User::class, 'organization_user')
+            ->withPivot('jabatan', 'membership_status')
+            ->wherePivot('membership_status', 'pending')
+            ->withTimestamps();
+    }
+
+    /**
+     * Schedules belonging to this organization.
+     */
+    public function schedules()
+    {
+        return $this->hasMany(Schedule::class);
+    }
+
+    /**
+     * Upcoming schedules.
+     */
+    public function upcomingSchedules()
+    {
+        return $this->hasMany(Schedule::class)
+            ->where('event_date', '>=', now()->toDateString())
+            ->orderBy('event_date')
+            ->orderBy('start_time');
+    }
+
+    /**
+     * Past schedules.
+     */
+    public function pastSchedules()
+    {
+        return $this->hasMany(Schedule::class)
+            ->where('event_date', '<', now()->toDateString())
+            ->orderByDesc('event_date');
     }
 }

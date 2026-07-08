@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Carbon\Carbon;
 
 class Schedule extends Model
 {
@@ -12,36 +13,54 @@ class Schedule extends Model
     protected $fillable = [
         'organization_id',
         'created_by',
-        'waktu_mulai',
-        'waktu_selesai',
-        'lokasi',
-        'jenis_kegiatan',
-        'is_active',
+        'title',
+        'event_date',
+        'start_time',
+        'end_time',
+        'location',
+        'description',
+        'is_open',
+        'is_recurring',
+        'repeat_until',
     ];
 
-    // Automatically convert the JSON array back into a usable PHP array
     protected $casts = [
-        'jenis_kegiatan' => 'array',
-        'is_active' => 'boolean',
-        'waktu_mulai' => 'datetime',
-        'waktu_selesai' => 'datetime',
+        'event_date'   => 'date',
+        'repeat_until' => 'date',
+        'is_recurring' => 'boolean',
+        'is_open'      => 'boolean',
     ];
 
-    // The unit holding the event
     public function organization()
     {
         return $this->belongsTo(Organization::class);
     }
 
-    // The BPH who made it
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    // The attendances linked to this schedule (We will make the Presence model next!)
     public function presences()
     {
         return $this->hasMany(Presence::class);
+    }
+
+    /**
+     * Attendance auto-opens on the event day.
+     * is_open = false means Pengurus manually closed it.
+     * Default is_open = true, so no manual action needed to open.
+     */
+    public function canAttend(): bool
+    {
+        return $this->event_date->isToday() && $this->is_open;
+    }
+
+    /**
+     * Accessor to ensure is_open is only true on the day of the event.
+     */
+    public function getIsOpenAttribute($value)
+    {
+        return $this->event_date->isToday() && $value;
     }
 }
