@@ -91,8 +91,8 @@ Buka browser Anda dan akses alamat: **http://localhost:8000**
 Sistem ini memblokir halaman login *default* untuk alasan keamanan. Untuk masuk ke dalam **Superuser Panel**, ikuti langkah berikut:
 1. Akses secara manual URL Rahasia: **http://localhost:8000/admin/secret-door**
 2. Masukkan kredensial berikut (jika Anda menggunakan `php artisan migrate:fresh --seed` di langkah 4):
-   *   **Email:** `admin@scupresence.com`
-   *   **Password:** `password`
+   *   **Email:** `admin@scupresence.ac.id`
+   *   **Password:** `admin123`
 3. Dari dashboard Admin, Anda dapat menyetujui (*Approve*) keanggotaan mahasiswa/pelatih baru, menambah daftar UKM/ORMAWA, dan melihat rekapitulasi data.
 
 ---
