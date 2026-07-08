@@ -87,8 +87,8 @@ Buka browser Anda dan akses alamat: **http://localhost:8000**
 3. Karena Google Auth *Client ID* sudah dikonfigurasi ke akun pengembang (dan `URL callback` disetel ke `http://localhost:8000`), fitur login akan otomatis berhasil.
 4. Setelah masuk, Anda akan diminta mengisi halaman pendaftaran (*Onboarding*) untuk memilih unit dan jabatan.
 
-### Skenario Login Super Admin (Secret Door)
-Sistem ini memblokir halaman login *default* untuk alasan keamanan. Untuk masuk sebagai **Super Admin**, ikuti langkah berikut:
+### Skenario Login Superuser Panel (Super Admin)
+Sistem ini memblokir halaman login *default* untuk alasan keamanan. Untuk masuk ke dalam **Superuser Panel**, ikuti langkah berikut:
 1. Akses secara manual URL Rahasia: **http://localhost:8000/admin/secret-door**
 2. Masukkan kredensial berikut (jika Anda menggunakan `php artisan migrate:fresh --seed` di langkah 4):
    *   **Email:** `admin@scupresence.com`
