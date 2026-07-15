@@ -11,6 +11,7 @@ const avatarPreview = ref(null);
 const showFakultasDropdown = ref(false);
 const activeUnitDropdown = ref(null);
 const activeJabatanDropdown = ref(null);
+const activeUnitCategory = ref({}); // tracks 'ormawa' or 'ukm' tab per unit index
 
 const handleClickOutside = (e) => {
     if (!e.target.closest('.custom-dropdown-container')) {
@@ -186,7 +187,7 @@ const submit = () => {
                                 </button>
                             </div>
                             <div class="custom-dropdown-container relative">
-                                <button type="button" @click="activeUnitDropdown = activeUnitDropdown === index ? null : index"
+                                <button type="button" @click="activeUnitDropdown = activeUnitDropdown === index ? null : index; if(!activeUnitCategory[index]) activeUnitCategory[index] = 'ormawa'"
                                     class="org-trigger"
                                     :class="{ 'is-open': activeUnitDropdown === index, 'is-selected': unit.organization_id }">
                                     <span class="flex-1 text-left truncate" :class="unit.organization_id ? 'text-gray-900 font-medium' : 'text-gray-400'">
@@ -199,24 +200,24 @@ const submit = () => {
 
                                 <Transition name="org-list-anim">
                                     <div v-if="activeUnitDropdown === index" class="org-list absolute z-50 w-full mt-2">
-                                        <p class="org-group-label">ORMAWA</p>
+                                        <!-- Category Tabs -->
+                                        <div class="flex border-b border-purple-100 bg-purple-50/60">
+                                            <button type="button"
+                                                @click.stop="activeUnitCategory[index] = 'ormawa'"
+                                                class="flex-1 py-2 text-xs font-bold tracking-wide uppercase transition-colors"
+                                                :class="activeUnitCategory[index] === 'ormawa' ? 'text-[#5B2163] border-b-2 border-[#5B2163] bg-white' : 'text-gray-400 hover:text-[#5B2163]'">
+                                                ORMAWA
+                                            </button>
+                                            <button type="button"
+                                                @click.stop="activeUnitCategory[index] = 'ukm'"
+                                                class="flex-1 py-2 text-xs font-bold tracking-wide uppercase transition-colors"
+                                                :class="activeUnitCategory[index] === 'ukm' ? 'text-[#5B2163] border-b-2 border-[#5B2163] bg-white' : 'text-gray-400 hover:text-[#5B2163]'">
+                                                UKM
+                                            </button>
+                                        </div>
+                                        <!-- Filtered unit list based on tab -->
                                         <button type="button"
-                                            v-for="org in organizations.filter(o => o.type === 'ormawa')" :key="org.id"
-                                            @click="unit.organization_id = org.id; activeUnitDropdown = null"
-                                            class="org-option"
-                                            :class="{ 'is-active': unit.organization_id === org.id }">
-                                            <span class="truncate">{{ org.name }}</span>
-                                            <Transition name="check-anim">
-                                                <svg v-if="unit.organization_id === org.id"
-                                                    class="check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path class="check-path" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-                                                </svg>
-                                            </Transition>
-                                        </button>
-                                        
-                                        <p class="org-group-label mt-2">UKM</p>
-                                        <button type="button"
-                                            v-for="org in organizations.filter(o => o.type === 'ukm')" :key="org.id"
+                                            v-for="org in organizations.filter(o => o.type === (activeUnitCategory[index] || 'ormawa'))" :key="org.id"
                                             @click="unit.organization_id = org.id; activeUnitDropdown = null"
                                             class="org-option"
                                             :class="{ 'is-active': unit.organization_id === org.id }">

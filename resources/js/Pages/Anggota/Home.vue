@@ -16,6 +16,7 @@ const showJoinModal = ref(false);
 const showOrgDropdown = ref(false);
 const allOrgs = ref([]);
 const joinForm = useForm({ organization_id: '', jabatan: '' });
+const joinOrgCategory = ref('ormawa');
 
 const selectedOrgName = computed(() => {
     if (!joinForm.organization_id) return null;
@@ -225,26 +226,24 @@ onMounted(() => {
                             <!-- Inline dropdown list -->
                             <Transition name="org-list-anim">
                             <div v-if="showOrgDropdown" class="org-list">
-                                <!-- ORMAWA group -->
-                                <p class="org-group-label">ORMAWA</p>
+                                <!-- Category Tabs -->
+                                <div class="flex border-b border-purple-100 bg-purple-50/60">
+                                    <button type="button"
+                                        @click.stop="joinOrgCategory = 'ormawa'"
+                                        class="flex-1 py-2 text-xs font-bold tracking-wide uppercase transition-colors"
+                                        :class="joinOrgCategory === 'ormawa' ? 'text-[#5B2163] border-b-2 border-[#5B2163] bg-white' : 'text-gray-400 hover:text-[#5B2163]'">
+                                        ORMAWA
+                                    </button>
+                                    <button type="button"
+                                        @click.stop="joinOrgCategory = 'ukm'"
+                                        class="flex-1 py-2 text-xs font-bold tracking-wide uppercase transition-colors"
+                                        :class="joinOrgCategory === 'ukm' ? 'text-[#5B2163] border-b-2 border-[#5B2163] bg-white' : 'text-gray-400 hover:text-[#5B2163]'">
+                                        UKM
+                                    </button>
+                                </div>
+                                <!-- Filtered list -->
                                 <button type="button"
-                                    v-for="org in allOrgs.filter(o => o.type === 'ormawa')" :key="org.id"
-                                    @click="joinForm.organization_id = org.id; showOrgDropdown = false"
-                                    class="org-option"
-                                    :class="{ 'is-active': joinForm.organization_id === org.id }">
-                                    <span>{{ org.name }}</span>
-                                    <Transition name="check-anim">
-                                        <svg v-if="joinForm.organization_id === org.id"
-                                            class="check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path class="check-path" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-                                        </svg>
-                                    </Transition>
-                                </button>
-
-                                <!-- UKM group -->
-                                <p class="org-group-label mt-2">UKM</p>
-                                <button type="button"
-                                    v-for="org in allOrgs.filter(o => o.type === 'ukm')" :key="org.id"
+                                    v-for="org in allOrgs.filter(o => o.type === joinOrgCategory)" :key="org.id"
                                     @click="joinForm.organization_id = org.id; showOrgDropdown = false"
                                     class="org-option"
                                     :class="{ 'is-active': joinForm.organization_id === org.id }">
