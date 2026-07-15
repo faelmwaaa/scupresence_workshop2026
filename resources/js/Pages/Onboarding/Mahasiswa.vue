@@ -34,14 +34,17 @@ const form = useForm({
 });
 
 const fakultasList = [
-    'Fakultas Ekonomi dan Bisnis',
-    'Fakultas Hukum dan Komunikasi',
+    'Fakultas Arsitektur & Desain',
+    'Fakultas Bahasa & Seni',
+    'Fakultas Ekonomi & Bisnis',
+    'Fakultas Hukum & Komunikasi',
+    'Fakultas Ilmu & Teknologi Lingkungan',
     'Fakultas Ilmu Komputer',
+    'Fakultas Kedokteran',
     'Fakultas Psikologi',
     'Fakultas Teknik',
     'Fakultas Teknologi Pertanian',
-    'Fakultas Arsitektur dan Desain',
-    'Sekolah Pascasarjana',
+    'IUP',
 ];
 
 const addUnit = () => form.units.push({ organization_id: '', jabatan: '', is_pengurus: false });
